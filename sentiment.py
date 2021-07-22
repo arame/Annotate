@@ -37,7 +37,12 @@ class Sentiment:
             self._sentiment = self.get_sentiment()
         except:
             _t = str(text).encode('utf8')
-            print("!! Data Error")
+            print(f"!! Data Error: {text}")
+            self.positive = 0
+            self.negative = 0
+            self.neutral = 1
+            self.compound = 0
+            self._sentiment = 0
 
     def get_sentiment(self):
         if self.positive == self.negative:
