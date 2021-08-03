@@ -6,17 +6,18 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 class Sentiment:
     def __init__(self) -> None:
         self.POSITIVE = 1
-        self.NEUTRAL = 0
-        self.NEGATIVE = -1
+        self.NEUTRAL = 9
+        self.NEGATIVE = 0
 
     def get(self, csv_file):
         text_list = csv_file["English Tweet"].tolist()
-        id_list = csv_file["Id"].tolist()
         self.pos = []
         self.neu = []
         self.neg = []
         self.com = []
         self.sent = []
+        self.count = 0
+        self.prev_text = "N/A"
         for _text in text_list:
             self.calc(_text)
             self.pos.append(self.positive)
@@ -26,6 +27,7 @@ class Sentiment:
             self.sent.append(self._sentiment)
 
     def calc(self, text):
+        self.count += 1
         self.text = text
         analyzer = SentimentIntensityAnalyzer()
         try:
@@ -35,14 +37,15 @@ class Sentiment:
             self.neutral = scores["neu"]
             self.compound = scores["compound"]
             self._sentiment = self.get_sentiment()
+            self.prev_text = text
         except:
             _t = str(text).encode('utf8')
-            print(f"!! Data Error: {text}")
-            self.positive = 0
-            self.negative = 0
-            self.neutral = 1
-            self.compound = 0
-            self._sentiment = 0
+            print(f"!! Data Error - row: {self.count}, text: {self.text}, previous text: {self.prev_text}")
+            self.positive = 9
+            self.negative = 9
+            self.neutral = 9
+            self.compound = 9
+            self._sentiment = 9
 
     def get_sentiment(self):
         if self.positive == self.negative:
