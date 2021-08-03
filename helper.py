@@ -10,6 +10,6 @@ class Helper:
         return [x for x in os.listdir() if os.path.isdir(x)]
 
     def list_country_folders():
-        all_folders = Helper.list_folders()
-        country_folders = all_folders.remove("no_country")
+        country_folders = Helper.list_folders()
+        country_folders.remove("no_country")
         return country_folders
