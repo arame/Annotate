@@ -1,5 +1,7 @@
 import pandas as pd
 import os
+from more_itertools import locate
+from pandas.core.frame import DataFrame
 from config import Hyper
 from sentiment import Sentiment
 from helper import Helper
@@ -26,16 +28,8 @@ def main():
         csv_input = csv_input.drop_duplicates()     # remove duplicate tweets
         sent.get(csv_input)
         csv_input = csv_input.drop(csv_input.query(f'sentiment=={sent.NEUTRAL}').index)
-        csv_input["s_pos"] = sent.pos
-        csv_input["s_neu"] = sent.neu
-        csv_input["s_neg"] = sent.neg
-        csv_input["s_compound"] = sent.com
-        csv_input["sentiment"] = sent.sent
-        csv_input["is_facemask"] = sent.is_facemask
-        csv_input["is_lockdown"] = sent.is_lockdown
-
+        save_csv(sent, Hyper.HyrdatedTweetFile)
         Helper.printline(f"Country: {i}. {country} saving {len(csv_input)} entries")
-        csv_input.to_csv(Hyper.HyrdatedTweetFile)
         facemask_perc = Helper.get_perc(sum(sent.is_facemask), len(csv_input))
         Helper.printline(f"NUmber of facemask comments are {sum(sent.is_facemask)} which is {facemask_perc}%")
         lockdown_perc = Helper.get_perc(sum(sent.is_lockdown), len(csv_input))
@@ -43,6 +37,17 @@ def main():
     
     Helper.printline("    Finished")
 
+def save_csv(sent, file):
+    df = DataFrame()
+    df["s_pos"] = sent.pos
+    df["s_neu"] = sent.neu
+    df["s_neg"] = sent.neg
+    df["s_compound"] = sent.com
+    df["sentiment"] = sent.sent
+    df["is_facemask"] = sent.is_facemask
+    df["is_lockdown"] = sent.is_lockdown
+    df.to_csv(file) 
+    
 def get_country_dir(i, country):
     if i == 1:
         return country

@@ -27,7 +27,6 @@ class Sentiment:
         self.count = 0
         self.prev_text = "N/A"
         for _text in text_list:
-            low_text = _text.lower()
             self.is_lockdown.append("lockdown" in _text)
             self.is_facemask.append(self.facemask_in_text(_text))
             self.calc(_text)
