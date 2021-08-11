@@ -13,3 +13,9 @@ class Helper:
         country_folders = Helper.list_folders()
         country_folders.remove("no_country")
         return country_folders
+
+    def get_perc(count, total):
+        if total == 0:
+            return 0
+            
+        return round((float(count) / float(total)) * 100, 2)
