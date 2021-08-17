@@ -1,6 +1,5 @@
 import pandas as pd
 import os
-from more_itertools import locate
 from pandas.core.frame import DataFrame
 from config import Hyper
 from sentiment import Sentiment
@@ -27,8 +26,9 @@ def main():
         csv_input = pd.read_csv(Hyper.HyrdatedTweetFile, sep=',', error_bad_lines=False, index_col=False, dtype='unicode')
         csv_input = csv_input.drop_duplicates()     # remove duplicate tweets
         sent.get(csv_input)
+        insert_clean_text_column(csv_input)
         csv_input = csv_input.drop(csv_input.query(f'sentiment=={sent.NEUTRAL}').index)
-        save_csv(sent, Hyper.HyrdatedTweetFile)
+        save_csv(csv_input, sent, Hyper.HyrdatedTweetFile)
         Helper.printline(f"Country: {i}. {country} saving {len(csv_input)} entries")
         facemask_perc = Helper.get_perc(sum(sent.is_facemask), len(csv_input))
         Helper.printline(f"NUmber of facemask comments are {sum(sent.is_facemask)} which is {facemask_perc}%")
@@ -37,16 +37,22 @@ def main():
     
     Helper.printline("    Finished")
 
-def save_csv(sent, file):
-    df = DataFrame()
-    df["s_pos"] = sent.pos
-    df["s_neu"] = sent.neu
-    df["s_neg"] = sent.neg
-    df["s_compound"] = sent.com
-    df["sentiment"] = sent.sent
-    df["is_facemask"] = sent.is_facemask
-    df["is_lockdown"] = sent.is_lockdown
-    df.to_csv(file) 
+def insert_clean_text_column(csv_input):
+    column_position = 10
+    column_title = "clean_text"
+    csv_input.insert(column_position, column_title, "")
+
+def save_csv(csv_input, sent, file):
+    #df = DataFrame()
+    csv_input["clean_text"] = sent.clean_text
+    csv_input["s_pos"] = sent.pos
+    csv_input["s_neu"] = sent.neu
+    csv_input["s_neg"] = sent.neg
+    csv_input["s_compound"] = sent.com
+    csv_input["sentiment"] = sent.sent
+    csv_input["is_facemask"] = sent.is_facemask
+    csv_input["is_lockdown"] = sent.is_lockdown
+    csv_input.to_csv(file) 
     
 def get_country_dir(i, country):
     if i == 1:

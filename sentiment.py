@@ -1,6 +1,7 @@
 from math import nan
 import nltk
 from nltk import text
+from data_cleaner import DataCleaner
 # VADER (Valence Aware Dictionary and sEntiment Reasoner) 
 # is a lexicon and rule-based sentiment analysis tool that is specifically 
 # attuned to sentiments expressed in social media.
@@ -16,17 +17,19 @@ class Sentiment:
         self.THRESHOLD = 0.05
 
     def get(self, csv_file):
-        text_list = csv_file["English Tweet"].tolist()
+        text_list = csv_file["Full Text"].tolist()
         self.pos = []
         self.neu = []
         self.neg = []
         self.com = []
         self.sent = []
+        self.clean_text = []
         self.is_lockdown = []
         self.is_facemask = []
         self.count = 0
         self.prev_text = "N/A"
         for _text in text_list:
+            self.clean_text.append(DataCleaner.remove_noise(_text))
             self.is_lockdown.append("lockdown" in _text)
             self.is_facemask.append(self.facemask_in_text(_text))
             self.calc(_text)
