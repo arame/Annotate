@@ -1,6 +1,5 @@
 import pandas as pd
 import os
-from pandas.core.frame import DataFrame
 from config import Hyper
 from sentiment import Sentiment
 from helper import Helper
@@ -26,25 +25,20 @@ def main():
         csv_input = pd.read_csv(Hyper.HyrdatedTweetFile, sep=',', error_bad_lines=False, index_col=False, dtype='unicode')
         csv_input = csv_input.drop_duplicates()     # remove duplicate tweets
         sent.get(csv_input)
-        insert_clean_text_column(csv_input)
         csv_input = csv_input.drop(csv_input.query(f'sentiment=={sent.NEUTRAL}').index)
         save_csv(csv_input, sent, Hyper.HyrdatedTweetFile)
         Helper.printline(f"Country: {i}. {country} saving {len(csv_input)} entries")
         facemask_perc = Helper.get_perc(sum(sent.is_facemask), len(csv_input))
-        Helper.printline(f"NUmber of facemask comments are {sum(sent.is_facemask)} which is {facemask_perc}%")
+        Helper.printline(f"Number of facemask comments are {sum(sent.is_facemask)} which is {facemask_perc}%")
         lockdown_perc = Helper.get_perc(sum(sent.is_lockdown), len(csv_input))
-        Helper.printline(f"lockdown comments are {sum(sent.is_lockdown)} which is {lockdown_perc}%")
-    
+        Helper.printline(f"Number of lockdown comments are {sum(sent.is_lockdown)} which is {lockdown_perc}%")
+        vax_perc = Helper.get_perc(sum(sent.is_vaccine), len(csv_input))
+        Helper.printline(f"Number of vaccination comments are {sum(sent.is_vaccine)} which is {vax_perc}%")    
     Helper.printline("    Finished")
 
-def insert_clean_text_column(csv_input):
-    column_position = 10
-    column_title = "clean_text"
-    csv_input.insert(column_position, column_title, "")
-
 def save_csv(csv_input, sent, file):
-    #df = DataFrame()
-    csv_input["clean_text"] = sent.clean_text
+    if Hyper.is_data_clean:
+        csv_input["clean_text"] = sent.clean_text
     csv_input["s_pos"] = sent.pos
     csv_input["s_neu"] = sent.neu
     csv_input["s_neg"] = sent.neg
@@ -52,6 +46,8 @@ def save_csv(csv_input, sent, file):
     csv_input["sentiment"] = sent.sent
     csv_input["is_facemask"] = sent.is_facemask
     csv_input["is_lockdown"] = sent.is_lockdown
+    csv_input["is_vaccine"] = sent.is_vaccine
+    csv_input.query(f"sentiment < {sent.NEUTRAL}", inplace=True)
     csv_input.to_csv(file) 
     
 def get_country_dir(i, country):

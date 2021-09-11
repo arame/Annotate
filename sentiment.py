@@ -1,6 +1,4 @@
-from math import nan
 import nltk
-from nltk import text
 from data_cleaner import DataCleaner
 # VADER (Valence Aware Dictionary and sEntiment Reasoner) 
 # is a lexicon and rule-based sentiment analysis tool that is specifically 
@@ -8,6 +6,7 @@ from data_cleaner import DataCleaner
 # See http://comp.social.gatech.edu/papers/icwsm14.vader.hutto.pdf
 nltk.download("vader_lexicon")
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from config import Hyper
 
 class Sentiment:
     def __init__(self) -> None:
@@ -23,15 +22,21 @@ class Sentiment:
         self.neg = []
         self.com = []
         self.sent = []
-        self.clean_text = []
+        if Hyper.is_data_clean:
+            self.clean_text = []
         self.is_lockdown = []
         self.is_facemask = []
+        if Hyper.is_vaccine_included:
+            self.is_vaccine = []
         self.count = 0
         self.prev_text = "N/A"
         for _text in text_list:
-            self.clean_text.append(DataCleaner.remove_noise(_text))
+            if Hyper.is_data_clean:
+                self.clean_text.append(DataCleaner.remove_noise(_text))
             self.is_lockdown.append("lockdown" in _text)
             self.is_facemask.append(self.facemask_in_text(_text))
+            if Hyper.is_vaccine_included:
+                self.is_vaccine.append(self.is_vaccine_in_text(_text))
             self.calc(_text)
             self.pos.append(self.positive)
             self.neu.append(self.neutral)
@@ -45,6 +50,12 @@ class Sentiment:
 
         return False
 
+    def is_vaccine_in_text(self, _text):
+        # vaccina is short for vaccinated, vaccination. Vax is a short form of the word vaccine or vaccinated
+        if "vaccine" in _text or "vaccina" in _text or "vax" in _text:
+            return True
+
+        return False
 
     def calc(self, text):
         self.count += 1

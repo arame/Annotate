@@ -7,6 +7,8 @@ class Hyper:
     HyrdatedTweetLangDir = f"../Summary_Details_files{time}/{language}"
     HyrdatedTweetFile = "tweets.csv"
     HyrdatedTweetLangFile = f"{language}_tweets.csv"
+    is_data_clean = False
+    is_vaccine_included = True
     
 class Constants:
     USER_HANDLES_REGEX = re.compile(r"@\S+")
