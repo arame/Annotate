@@ -4,9 +4,14 @@ from config import Hyper
 from sentiment import Sentiment
 from helper import Helper
 
-
-# Create the sentiment columns on the tweet files
-# See https://stackoverflow.com/questions/11070527/how-to-add-a-new-column-to-a-csv-file
+'''
+    This program is the third in a suite of programs to be executed in this order
+    1/ App - gets tweets from Twitter API
+    2/ Location - gets the country of the tweet from user location
+    3/ Annotate - calculates the sentiment of each tweet
+    4/ Wordcload - shows the words most in use in tweets from different countries
+    5/ Transformer - builds a transformer model from the tweets
+'''
 def main():
     curr_dir = os.getcwd()
     Helper.printline("   Started")
